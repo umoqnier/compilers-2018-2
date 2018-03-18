@@ -1,9 +1,38 @@
-Just a test: #define es palabra reservada
-Just a test: #ifdef es palabra reservada
-Just a test: #if es palabra reservada
-Just a test: #define es palabra reservada
-Just a test: #undef es palabra reservada
-Just a test: #elif es palabra reservada
-Just a test: #else es palabra reservada
-Just a test: #endif es palabra reservada
-Just a test: #endif es palabra reservada
+=== #define === es palabra reservada
+=== B === es constante simbolica
+=== "0" === es valor de constante simbolica
+=== #ifdef === es palabra reservada
+=== B === es constante simbolica
+=== #if === es palabra reservada
+=== B === es constante simbolica
+=== > === es operador relacional
+=== 0 === es entero
+=== #define === es palabra reservada
+=== PI === es constante simbolica
+=== "3.14159" === es valor de constante simbolica
+=== P === es constante simbolica
+=== B === es constante simbolica
+=== > === es operador relacional
+=== 0 === es entero
+=== #undef === es palabra reservada
+=== PI === es constante simbolica
+=== 3 === es entero
+=== 14159 === es entero
+=== //fin del primer programa === es comentario
+=== #elif === es palabra reservada
+=== B === es constante simbolica
+=== < === es operador relacional
+=== 0 === es entero
+=== P === es constante simbolica
+=== B === es constante simbolica
+=== < === es operador relacional
+=== 0 === es entero
+=== // fin del segundo programa === es comentario
+=== #else === es palabra reservada
+=== P === es constante simbolica
+=== B === es constante simbolica
+=== == === es operador relacional
+=== 0 === es entero
+=== // fin del tercer programa === es comentario
+=== #endif === es palabra reservada
+=== #endif === es palabra reservada

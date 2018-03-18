@@ -8,12 +8,49 @@ Luis Bustos*/
 FILE *salida;
 %}
 
-reservadas #define|#elif|#else|#endif|#if|#ifdef|#ifndef|#undef
+comentario     (\/\/.*|\/\*(.|\n)+\*\/)$
+especial       [\(\)\{\}\.\"\;\t\n ]
+lineaCodigo    ^[^#]([a-zA-Z0-9]*[{especial}]*)*$  /* No funciona la deteccion de lineas de codigo*/
+dig            [0-9]
+mantReal       ({dig}*\.{dig}+|{dig}+\.{dig})
+entero         ([1-9]{dig}*|0)
+opRel          >|>=|<|<=|==|!=
+opAri          \+|\-|\*|\/|%
+reservadas     #define|#elif|#else|#endif|#if|#ifdef|#ifndef|#undef
+valCteSimbol   \"({mantReal}|{entero})\"
+cteSimbol      [A-Z]{1,8}
 
 %%
-{reservadas} {
-  fprintf(salida, "Just a test: %s es palabra reservada\n", yytext);
+{comentario} {
+  fprintf(salida, "=== %s === es comentario\n", yytext);
+}
 
+{lineaCodigo} {
+  fprintf(salida, "=== %s === es lineaCodigo a analizar\n", yytext);
+}
+
+{reservadas} {
+  fprintf(salida, "=== %s === es palabra reservada\n", yytext);
+}
+
+{cteSimbol} {
+  fprintf(salida, "=== %s === es constante simbolica\n", yytext);
+}
+
+{valCteSimbol} {
+  fprintf(salida, "=== %s === es valor de constante simbolica\n", yytext);
+}
+
+{entero} {
+  fprintf(salida, "=== %s === es entero\n", yytext);
+}
+
+{opAri} {
+  fprintf(salida, "=== %s === es operador aritmetico\n", yytext);
+}
+
+{opRel} {
+  fprintf(salida, "=== %s === es operador relacional\n", yytext);
 }
 %%
 
