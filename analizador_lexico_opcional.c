@@ -17,7 +17,8 @@ void main(int argc, char *argv[]){
 		if( arch == 0 ) 
 			printf("Error al abrir archivo %s\n", argv[1]);
 		else{
-			while((caracter = fgetc(arch)) != EOF){
+			while(caracter != EOF){
+				caracter = fgetc(arch);
 				printf("%c", caracter);
 				lexLuthor(estado, caracter, arch);
 			}

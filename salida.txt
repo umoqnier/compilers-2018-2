@@ -1,0 +1,9 @@
+Just a test: #define es palabra reservada
+Just a test: #ifdef es palabra reservada
+Just a test: #if es palabra reservada
+Just a test: #define es palabra reservada
+Just a test: #undef es palabra reservada
+Just a test: #elif es palabra reservada
+Just a test: #else es palabra reservada
+Just a test: #endif es palabra reservada
+Just a test: #endif es palabra reservada
