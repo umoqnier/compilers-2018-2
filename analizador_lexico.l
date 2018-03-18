@@ -10,7 +10,7 @@ FILE *salida;
 
 comentario     (\/\/.*|\/\*(.|\n)+\*\/)$
 especial       [\(\)\{\}\.\"\;\t\n ]
-lineaCodigo    ^[^#]([a-zA-Z0-9]*[{especial}]*)*$  /* No funciona la deteccion de lineas de codigo*/
+lineaCodigo    ^([^#].*)
 dig            [0-9]
 mantReal       ({dig}*\.{dig}+|{dig}+\.{dig})
 entero         ([1-9]{dig}*|0)
@@ -19,8 +19,8 @@ opAri          \+|\-|\*|\/|%
 reservadas     #define|#elif|#else|#endif|#if|#ifdef|#ifndef|#undef
 valCteSimbol   \"({mantReal}|{entero})\"
 cteSimbol      [A-Z]{1,8}
-
 %%
+
 {comentario} {
   fprintf(salida, "=== %s === es comentario\n", yytext);
 }
