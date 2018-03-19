@@ -6,8 +6,12 @@ Luis Bustos*/
 #include <string.h>
 #include <stdlib.h>
 FILE *salida;
-%}
+char *clase0[] = {{"#define"},{"#elif"},{"#else"},{"#endif"},{"#if"},{"#ifdef"},{"#ifndef"},{"#undef"}};
+char *clase4[] = {{">"},{">="},{"<"},{"<="},{"=="},{"!="}};
+char *clase6[]= {{"("},{")"}};
+char *clase7[]= {{"+"},{"-"},{"*"},{"/"},{"%"}};
 
+%}
 comentario     (\/\/.*|\/\*(.|\n)+\*\/)$
 especial       [\(\)\{\}\.\"\;\t\n ]
 lineaCodigo    ^([^#].*)
@@ -31,6 +35,16 @@ cteSimbol      [A-Z]{1,8}
 
 {reservadas} {
   fprintf(salida, "=== %s === es palabra reservada\n", yytext);
+  int i=0;
+  char iguales;
+  for(i;i<8;i++){
+    iguales = strcmp(clase0[i],yytext);
+    if(!iguales){
+       printf("Son iguales: %s", clase0[i]);
+       fprintf(salida,"token(0,%d)\n",i);
+       break;
+    }
+  }
 }
 
 {cteSimbol} {
@@ -43,14 +57,32 @@ cteSimbol      [A-Z]{1,8}
 
 {entero} {
   fprintf(salida, "=== %s === es entero\n", yytext);
+  fprintf(salida, "token(3,%d)\n",atoi(yytext));
 }
 
 {opAri} {
   fprintf(salida, "=== %s === es operador aritmetico\n", yytext);
+  int i=0;
+  char iguales;
+  for(i;i<5;i++){
+    iguales = strcmp(clase7[i],yytext);
+    if(!iguales){
+        fprintf(salida,"token(7,%d)\n",i);
+        break;
+    }
+  }
 }
-
 {opRel} {
   fprintf(salida, "=== %s === es operador relacional\n", yytext);
+  int i=0;
+  char iguales;
+  for(i;i<7;i++){
+	iguales = strcmp(clase4[i],yytext);
+	if(!iguales){
+		fprintf(salida,"token(4,%d)\n",i);
+		break;
+	}
+  }
 }
 %%
 
