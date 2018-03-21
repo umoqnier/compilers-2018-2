@@ -5,7 +5,6 @@ Luis Bustos*/
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "Cola.h"
 FILE *salida;
 
 typedef struct{
@@ -17,9 +16,12 @@ typedef struct{
   char *nombre;
   int valor;
   int alcance;
-}Simbolos;
+}Simbolo;
 
-Token *tokens;  // Arreglo de tokens
+Token *agregaToken(Token *, Token);
+
+Token *tokens; // Arreglo (tabla) de tokens. 
+Simbolo *simbolos; // Arreglo (tabla) de símbolos
 char **tablaCteSimbolicas;  // Arreglo de strings para constantes simbolicas
 char **tablaCodigoAnalizar;  // Arreglo de strings para codigo
 
@@ -50,13 +52,17 @@ cteSimbol      [A-Z]{1,8}
 
 {reservadas} {
   fprintf(salida, "=== %s === es palabra reservada\n", yytext);
-  int i=0;
+  short i;
   char iguales;
-  for(i; i < 8; i++){
+  Token t; // Declaración de un token
+  t.clase = 0;
+  for(i = 0; i < 8; i++){
     iguales = strcmp(clase0[i], yytext);
     if(!iguales){
-       printf("Son iguales: %s", clase0[i]);
-       fprintf(salida,"token(0,%d)\n",i);
+       printf("Token: **%s** encontrado", clase0[i]);
+       t.valor = i;
+       tokens = agregaToken(tokens, t);
+       fprintf(salida,"Current state --> token(0,%d)\n",i);
        break;
     }
   }
@@ -139,6 +145,22 @@ int lenTabla(char *t){
   return sizeof(t)/sizeof(t[0]);
 };
 
+/*char *agregaElementoTabla(char *t, char n){
+
+};*/
+
+void agregaLineaCodigo(char *t, char *codigo){
+  int lenT = lenTabla(t);
+  lenT++;
+  if(t){
+    t[lenT] = (char *)malloc(strlen(codigo)*sizeof(char));  // Crea el espacio necesario para el string del codigo
+    strcpy(t[lenT], codigo);
+  }else{
+
+  }
+
+}
+
 /* ======================================
     Función principal
 ======================================*/
@@ -146,6 +168,7 @@ void main(int argc, char *argv[]){
   if ( argc != 2 )  // Se ingresa solo un argumento
 	  printf( "El programa: %s requiere el nombre del archivo como segundo argumento.\n", argv[0] );
 	else{
+    tokens = (Token *)malloc(1*sizeof(Token));  // Inicializado a un elemento token. Al menos debe existir uno
 		yyin = fopen(argv[1], "r");  // yyin por defecto es el archivo de entrada
     salida = fopen("salida.txt", "w");
     yylex();
