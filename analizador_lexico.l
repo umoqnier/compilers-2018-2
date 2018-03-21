@@ -5,13 +5,31 @@ Luis Bustos*/
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "Cola.h"
 FILE *salida;
-char *clase0[] = {{"#define"},{"#elif"},{"#else"},{"#endif"},{"#if"},{"#ifdef"},{"#ifndef"},{"#undef"}};
-char *clase4[] = {{">"},{">="},{"<"},{"<="},{"=="},{"!="}};
-char *clase6[]= {{"("},{")"}};
-char *clase7[]= {{"+"},{"-"},{"*"},{"/"},{"%"}};
+
+typedef struct{
+  int clase;
+  int valor;
+}Token;
+
+typedef struct{
+  char *nombre;
+  int valor;
+  int alcance;
+}Simbolos;
+
+Token *tokens;  // Arreglo de tokens
+char **tablaCteSimbolicas;  // Arreglo de strings para constantes simbolicas
+char **tablaCodigoAnalizar;  // Arreglo de strings para codigo
+
+char *clase0[] = {"#define","#elif","#else","#endif","#if","#ifdef","#ifndef","#undef"};
+char *clase4[] = {">",">=","<","<=","==","!="};
+char *clase6[] = {"(",")"};
+char *clase7[] = {"+","-","*","/","%"};
 
 %}
+
 comentario     (\/\/.*|\/\*(.|\n)+\*\/)$
 especial       [\(\)\{\}\.\"\;\t\n ]
 lineaCodigo    ^([^#].*)
@@ -23,22 +41,19 @@ opAri          \+|\-|\*|\/|%
 reservadas     #define|#elif|#else|#endif|#if|#ifdef|#ifndef|#undef
 valCteSimbol   \"({mantReal}|{entero})\"
 cteSimbol      [A-Z]{1,8}
+
 %%
 
-{comentario} {
-  fprintf(salida, "=== %s === es comentario\n", yytext);
-}
-
 {lineaCodigo} {
-  fprintf(salida, "=== %s === es lineaCodigo a analizar\n", yytext);
+  fprintf(salida, "=== %s === es linea codigo a analizar\n", yytext);
 }
 
 {reservadas} {
   fprintf(salida, "=== %s === es palabra reservada\n", yytext);
   int i=0;
   char iguales;
-  for(i;i<8;i++){
-    iguales = strcmp(clase0[i],yytext);
+  for(i; i < 8; i++){
+    iguales = strcmp(clase0[i], yytext);
     if(!iguales){
        printf("Son iguales: %s", clase0[i]);
        fprintf(salida,"token(0,%d)\n",i);
@@ -72,20 +87,61 @@ cteSimbol      [A-Z]{1,8}
     }
   }
 }
+
 {opRel} {
   fprintf(salida, "=== %s === es operador relacional\n", yytext);
   int i=0;
   char iguales;
   for(i;i<7;i++){
 	iguales = strcmp(clase4[i],yytext);
-	if(!iguales){
-		fprintf(salida,"token(4,%d)\n",i);
-		break;
-	}
+	  if(!iguales){
+		  fprintf(salida,"token(4,%d)\n",i);
+  		break;
+	  }
   }
 }
 %%
 
+/* ======================================
+    Funciones para estructura tokens
+======================================*/
+int verificaTokens(Token *t){
+  /* Verifica que exista un token en el arreglo de tokens*/
+  if(t)
+    return 1;
+  else;
+    return 0;
+};
+
+int lenToken(Token *t){
+  return sizeof(t)/sizeof(t[0]);
+};
+
+Token *agregaToken(Token *t, Token n){
+  int len = lenToken(t);
+  len++;
+  t = (Token *)realloc(t, 1 * sizeof(Token));
+  t[len] = n;
+  return t;
+}
+
+/* ======================================
+    Funciones para manejo de Tablas
+======================================*/
+int verificaTablas(char *tabla){
+  if(tabla)
+    return 1;
+  else
+    return 0;
+};
+
+int lenTabla(char *t){
+  return sizeof(t)/sizeof(t[0]);
+};
+
+/* ======================================
+    Función principal
+======================================*/
 void main(int argc, char *argv[]){
   if ( argc != 2 )  // Se ingresa solo un argumento
 	  printf( "El programa: %s requiere el nombre del archivo como segundo argumento.\n", argv[0] );
