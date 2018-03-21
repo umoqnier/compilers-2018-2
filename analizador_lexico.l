@@ -20,7 +20,7 @@ typedef struct{
 
 Token *agregaToken(Token *, Token);
 
-Token *tokens; // Arreglo (tabla) de tokens. 
+Token *tokens; // Arreglo (tabla) de tokens.
 Simbolo *simbolos; // Arreglo (tabla) de símbolos
 char **tablaCteSimbolicas;  // Arreglo de strings para constantes simbolicas
 char **tablaCodigoAnalizar;  // Arreglo de strings para codigo
@@ -69,6 +69,12 @@ cteSimbol      [A-Z]{1,8}
 }
 
 {cteSimbol} {
+  short i;
+  char iguales;
+  Simbolo s;
+  s.valor = -1;
+  s.alcance = -1;
+  for(i = 0; i < )
   fprintf(salida, "=== %s === es constante simbolica\n", yytext);
 }
 
@@ -124,8 +130,8 @@ int lenToken(Token *t){
 };
 
 Token *agregaToken(Token *t, Token n){
-  int len = lenToken(t);
-  len++;
+  int lenT = lenToken(t);
+  lenT++;
   t = (Token *)realloc(t, 1 * sizeof(Token));
   t[len] = n;
   return t;
@@ -133,6 +139,7 @@ Token *agregaToken(Token *t, Token n){
 
 /* ======================================
     Funciones para manejo de Tablas
+(Constantes simbolicas y codigo a analizar)
 ======================================*/
 int verificaTablas(char *tabla){
   if(tabla)
@@ -162,6 +169,22 @@ void agregaLineaCodigo(char *t, char *codigo){
 }
 
 /* ======================================
+    Funciones para Tabla de simbolos
+======================================*/
+int lenSimbolos(Simbolo *s){
+  return sizeof(s)/sizeof(s[0]);
+};
+
+Simbolo *agregaSimbolo(Simbolo *s, Simbolo n){
+  int lenS = lenSimbolos(s);
+  lenS++;
+  s = (Simbolo *)realloc(s, 1*sizeof(Simbolo));
+  s[lenS] = n;
+  
+  return s;
+};
+
+/* ======================================
     Función principal
 ======================================*/
 void main(int argc, char *argv[]){
@@ -169,6 +192,7 @@ void main(int argc, char *argv[]){
 	  printf( "El programa: %s requiere el nombre del archivo como segundo argumento.\n", argv[0] );
 	else{
     tokens = (Token *)malloc(1*sizeof(Token));  // Inicializado a un elemento token. Al menos debe existir uno
+    simbolos = (Simbolo *)malloc(1*sizeof(Simbolo));  // Inicializando a un elemento simbolo. Al menos debe existir uno
 		yyin = fopen(argv[1], "r");  // yyin por defecto es el archivo de entrada
     salida = fopen("salida.txt", "w");
     yylex();
