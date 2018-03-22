@@ -19,18 +19,23 @@ typedef struct{
   int alcance;
 }Simbolo;
 
+typedef struct{
+  char *constante;
+}CteSimbolica;
+
 /* Prototipos de funciones */
 Token *agregaToken(Token *, Token);
 Simbolo *agregaSimbolo(Simbolo *, Simbolo);
+CteSimbolica *agregaConstanteS(CteSimbolica *, CteSimbolica);
 
 Token *tokens; // Arreglo (tabla) de tokens
-int lenTokens;
 Simbolo *simbolos; // Arreglo (tabla) de símbolos
-int lenSimbolos;
-char **tablaCteSimbolicas;  // Arreglo de strings para constantes simbolicas
-int lenTablaCteS;
-char **tablaCodigoAnalizar;  // Arreglo de strings para codigo
-int lenTablaCodigo;
+CteSimbolica *tablaCteS;  // Arreglo de strings para constantes simbolicas
+char **tablaCodigoAnalizar;  // Arreglo de strings para código
+int lenTokens = 0; // Longitud de la tabla de tokens
+int lenSimbolos = 0;  // Longitud de  la tabla de simbolos
+int lenCteSimbolicas = 0;  // Longitud de la  tabla de constantes simbolicas
+int lenTablaCodigo = 0;  // Longitud de tabla de código a analizar
 
 char *clase0[] = {"#define","#elif","#else","#endif","#if","#ifdef","#ifndef","#undef"};
 char *clase4[] = {">",">=","<","<=","==","!="};
@@ -44,7 +49,7 @@ especial       [\(\)\{\}\.\"\;\t\n ]
 lineaCodigo    ^([^#].*)
 dig            [0-9]
 mantReal       ({dig}*\.{dig}+|{dig}+\.{dig})
-entero         ([1-9]{dig}*|0)
+entero         ([1-9]{dig}*|0)$
 opRel          >|>=|<|<=|==|!=
 opAri          \+|\-|\*|\/|%
 reservadas     #define|#elif|#else|#endif|#if|#ifdef|#ifndef|#undef
@@ -61,16 +66,15 @@ cteSimbol      [A-Z]{1,8}
   fprintf(salida, "=== %s === reservada\n", yytext);
   short i, j;
   char iguales;
-  Token t, *aux; // Declaración de un token
+  Token t; // Declaración de un token
   t.clase = 0;
   for(i = 0; i < 8; i++){
     iguales = strcmp(clase0[i], yytext);
-    if(!iguales){
+    if(iguales == 0){
        printf("Reservada **%s** encontrada\n", clase0[i]);
        t.valor = i;
-       lenTokens++;
-       aux = agregaToken(tokens, t);
-       tokens = aux;
+       ++lenTokens;
+       tokens = agregaToken(tokens, t);
        printf("Current state --> token(0,%d)\n", t.valor);
        fprintf(salida, "Current state --> token(0,%d)\n", i);
        break;
@@ -80,24 +84,26 @@ cteSimbol      [A-Z]{1,8}
 
 {cteSimbol} {
   printf("Constante simbolica **%s** encontrada\n", yytext);
-  short i, tamSimb;
+  Token t;
+  Simbolo s;
+  char i;
+  short tamSimb;
   char iguales;
   char bandera = 0;
-  Token t, *auxT;
-  Simbolo s, *auxS;
   s.valor = -1;
   s.alcance = -1;
   t.clase = 1;
   for(i = 0; i < lenSimbolos; i++){  // Busqueda del simbolo en la tabla
     iguales = strcmp(simbolos[i].nombre, yytext);
-    if(!iguales)
-      printf("Simbolo %s ya esta en la tabla\n", yytext);
+    if(iguales == 0){
+      printf("\tSimbolo %s en pos %d\n", yytext, i);
       t.valor = i;
       bandera = 1;
       break;
+    }
   }
-  if(!bandera){  // La constante no esta en la tabla de simbolos. Se agrega
-    printf("Agregando %s a la tabla de simbolos\n", yytext);
+  if(bandera == 0){  // La constante no esta en la tabla de simbolos. Se agrega
+    printf("\tAgregando %s a la tabla de simbolos\n", yytext);
     fprintf(salida, "Agregando %s a tabla de simbolos\n", yytext);
     tamSimb = strlen(yytext);
     s.nombre = (char *)malloc(tamSimb * sizeof(char));  // Asigna memoria para guardar una cadena del tamaño del simbolo
@@ -113,18 +119,30 @@ cteSimbol      [A-Z]{1,8}
 }
 
 {valCteSimbol} {
-  printf("En VAL CONTE SiMB\n");
-  fprintf(salida, "=== %s === es valor de constante simbolica\n", yytext);
+  printf("Valor CTE simbolica **%s**\n", yytext);
+  char i, iguales, bandera = 0;
+  Token t;
+  CteSimbolica cs;
+  t.clase = 2;
+  cs.constante = (char *)malloc(strlen(yytext)*sizeof(char));
+  strcpy(cs.constante, yytext);
+  lenCteSimbolicas++;
+  tablaCteS = agregaConstanteS(tablaCteS, cs);
+  t.valor = lenCteSimbolicas - 1;
+  lenTokens++;
+  tokens = agregaToken(tokens, t);
+  printf("Current state --> token(%d,%d)\n", t.clase, t.valor);
+  fprintf(salida, "Current state --> token(%d,%d)\n", t.clase, t.valor);
 }
 
 {entero} {
-  printf("En entero\n");
+  printf("\nEntero **%s** encontrado\n", yytext);
   fprintf(salida, "=== %s === es entero\n", yytext);
   fprintf(salida, "token(3,%d)\n",atoi(yytext));
 }
 
 {opAri} {
-  printf("En OP ARIT");
+  printf("\bEn OP ARIT --> %s", yytext);
   fprintf(salida, "=== %s === es operador aritmetico\n", yytext);
   int i=0;
   char iguales;
@@ -138,7 +156,7 @@ cteSimbol      [A-Z]{1,8}
 }
 
 {opRel} {
-  printf("En OP REL");
+  printf("\nEn OP REL --> %s", yytext);
   fprintf(salida, "=== %s === es operador relacional\n", yytext);
   int i=0;
   char iguales;
@@ -152,66 +170,66 @@ cteSimbol      [A-Z]{1,8}
 }
 %%
 
-/* ======================================
+/* ====================================
     Funciones para estructura tokens
 ======================================*/
-int verificaTokens(Token *t){
-  /* Verifica que exista un token en el arreglo de tokens*/
-  if(t)
-    return 1;
-  else;
-    return 0;
-};
 
-
-Token *agregaToken(Token *t, Token n){
+Token *agregaToken(Token *arr, Token new){
   printf("Len Tokens: %d\n", lenTokens);
   if(lenTokens == 1){
-    t[lenTokens - 1] = n;
+    arr[0] = new;
   }else{
-    printf("Realloc de agregaToken\n");
-    t = (Token *)realloc(t, 1*sizeof(Token));    
-    t[lenTokens - 1] = n;
+    arr = (Token *)realloc(arr, lenTokens*sizeof(Token));
+    arr[lenTokens - 1] = new;
   }
-  return t;
+  return arr;
 }
 
 /* ======================================
-    Funciones para manejo de Tablas
-(Constantes simbolicas y codigo a analizar)
+    Funciones para manejo de Tabla de constantes simbólicas
 ======================================*/
 
-/*char *agregaElementoTabla(char *t, char n){
+CteSimbolica *agregaConstanteS(CteSimbolica *arr, CteSimbolica nuevaConstante){
+  printf("Len Constantes Simbol: %d\n", lenCteSimbolicas);
+  if(lenCteSimbolicas == 1){
+    arr[0] = nuevaConstante;
+  }else{
+    arr = (CteSimbolica *)realloc(arr, lenCteSimbolicas * sizeof(CteSimbolica));
+    arr[lenCteSimbolicas - 1] = nuevaConstante;
+  }
 
+  return arr;
 };
 
 void agregaLineaCodigo(char *t, char *codigo){
   ++lenTablaCodigo;
   t[lenTablaCodigo] = (char *)malloc(strlen(codigo)*sizeof(char));  // Crea el espacio necesario para el string del codigo
   strcpy(t[lenTablaCodigo], codigo);
-}*/
+}
 
 /* ======================================
     Funciones para Tabla de simbolos
 ======================================*/
 
-Simbolo *agregaSimbolo(Simbolo *s, Simbolo n){
+Simbolo *agregaSimbolo(Simbolo *arr, Simbolo new){
+  printf("Len simbolos: %d\n", lenSimbolos);
   if(lenSimbolos == 1){ // No se necesita realloc por que se inicializa el arreglo de simbolos en main()
-    s[lenSimbolos - 1] = n;
-  }else{
-    s = (Simbolo *)realloc(s, 1*sizeof(Simbolo));  // Agregamos un elemento al arreglo de simbolos
-    s[lenSimbolos - 1] = n;
+    arr[0] = new;
   }
-  return s;
+  else{
+    arr = (Simbolo *)realloc(arr, lenSimbolos*sizeof(Simbolo));  // Agregamos un elemento al arreglo de simbolos
+    arr[lenSimbolos - 1] = new;
+  }
+  return arr;
 };
 
 /* ======================================
     Funciones de impresion
 ======================================*/
-void imprimeTokens(Token *t){
-  char i, j;
+void imprimeTokens(Token *arr){
+  char i;
   for(i = 0; i < lenTokens; i++){
-    fprintf(logs, "token(%d, %d)", t[i].clase, t[i].valor);
+    fprintf(logs, "token(%d,%d)", arr[i].clase, arr[i].valor);
   }
 }
 
@@ -223,13 +241,14 @@ void main(int argc, char *argv[]){
 	  printf( "El programa: %s requiere el nombre del archivo como segundo argumento.\n", argv[0] );
 	else{
     tokens = (Token *)malloc(1*sizeof(Token));  // Inicializado a un elemento token. Al menos debe existir uno
-    lenTokens = 0;
     simbolos = (Simbolo *)malloc(1*sizeof(Simbolo));  // Inicializando a un elemento simbolo. Al menos debe existir uno
-    lenSimbolos = 0;
+    tablaCteS = (CteSimbolica *)malloc(1*sizeof(CteSimbolica));
 		yyin = fopen(argv[1], "r");  // yyin por defecto es el archivo de entrada
     salida = fopen("salida.txt", "w");
     logs = fopen("logs.txt", "w");
     yylex();
+    free(simbolos);
+    free(tokens);
     fclose(salida);
     fclose(logs);
 	}
