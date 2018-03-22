@@ -1,3 +1,4 @@
+#undef
 #define B "0"
 #ifdef B
 #if B>0
