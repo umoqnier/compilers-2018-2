@@ -2,7 +2,7 @@
 #define B "0"
 #ifdef B
 #if B>0
-#define PI "3.14159"
+#define PI "3.14159" ()
 main() {
   printf("Programa con B>0\n");
 #undef PI
