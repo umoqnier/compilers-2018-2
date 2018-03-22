@@ -68,18 +68,18 @@ cteSimbol      [A-Z]{1,8}
     if(!iguales){
        printf("Reservada **%s** encontrada\n", clase0[i]);
        t.valor = i;
+       lenTokens++;
        aux = agregaToken(tokens, t);
        tokens = aux;
        printf("Current state --> token(0,%d)\n", t.valor);
        fprintf(salida, "Current state --> token(0,%d)\n", i);
-       printf("despues de archivo reserva\n");
        break;
     }
   }
 }
 
 {cteSimbol} {
-  printf("En constante simbolica");
+  printf("Constante simbolica **%s** encontrada\n", yytext);
   short i, tamSimb;
   char iguales;
   char bandera = 0;
@@ -94,24 +94,22 @@ cteSimbol      [A-Z]{1,8}
       printf("Simbolo %s ya esta en la tabla\n", yytext);
       t.valor = i;
       bandera = 1;
-      fprintf(salida, "Current state --> token(1,%d)\n", i);
       break;
   }
-  printf("%s no esta en la tabla de simbolos\n", yytext);
   if(!bandera){  // La constante no esta en la tabla de simbolos. Se agrega
-    fprintf(salida, "Nuevo simbolo %s encontrado\n", yytext);
-    printf("despues de archivo\n");
+    printf("Agregando %s a la tabla de simbolos\n", yytext);
+    fprintf(salida, "Agregando %s a tabla de simbolos\n", yytext);
     tamSimb = strlen(yytext);
     s.nombre = (char *)malloc(tamSimb * sizeof(char));  // Asigna memoria para guardar una cadena del tamaño del simbolo
     strcpy(s.nombre, yytext);
-    printf("despues de archivo\n");
-    auxS = agregaSimbolo(simbolos, s);
-    simbolos = auxS;
-    t.valor = lenSimbolos;  // El ultimo agregado
+    lenSimbolos++;
+    simbolos = agregaSimbolo(simbolos, s);
+    t.valor = lenSimbolos - 1;  // El ultimo agregado
   }
-  auxT = agregaToken(tokens, t);
-  tokens = auxT;
-  fprintf(salida, "Current state --> token(1, %d)\n", t.valor);
+  lenTokens++;
+  tokens = agregaToken(tokens, t);
+  printf("Current state --> token(1,%d)\n", t.valor);
+  fprintf(salida, "Current state --> token(1,%d)\n", t.valor);
 }
 
 {valCteSimbol} {
@@ -167,12 +165,14 @@ int verificaTokens(Token *t){
 
 
 Token *agregaToken(Token *t, Token n){
-  Token *aux;
-  printf("LEN TOKEN %d\n", lenTokens);
-  ++lenTokens;
-  aux = (Token *)realloc(t, 1 * sizeof(Token));
-  t = aux;
-  t[lenTokens] = n;
+  printf("Len Tokens: %d\n", lenTokens);
+  if(lenTokens == 1){
+    t[lenTokens - 1] = n;
+  }else{
+    printf("Realloc de agregaToken\n");
+    t = (Token *)realloc(t, 1*sizeof(Token));    
+    t[lenTokens - 1] = n;
+  }
   return t;
 }
 
@@ -196,9 +196,12 @@ void agregaLineaCodigo(char *t, char *codigo){
 ======================================*/
 
 Simbolo *agregaSimbolo(Simbolo *s, Simbolo n){
-  ++lenSimbolos;
-  s = (Simbolo *)realloc(s, 1*sizeof(Simbolo));
-  s[lenSimbolos] = n;
+  if(lenSimbolos == 1){ // No se necesita realloc por que se inicializa el arreglo de simbolos en main()
+    s[lenSimbolos - 1] = n;
+  }else{
+    s = (Simbolo *)realloc(s, 1*sizeof(Simbolo));  // Agregamos un elemento al arreglo de simbolos
+    s[lenSimbolos - 1] = n;
+  }
   return s;
 };
 
@@ -220,9 +223,9 @@ void main(int argc, char *argv[]){
 	  printf( "El programa: %s requiere el nombre del archivo como segundo argumento.\n", argv[0] );
 	else{
     tokens = (Token *)malloc(1*sizeof(Token));  // Inicializado a un elemento token. Al menos debe existir uno
-    lenTokens = 1;
+    lenTokens = 0;
     simbolos = (Simbolo *)malloc(1*sizeof(Simbolo));  // Inicializando a un elemento simbolo. Al menos debe existir uno
-    lenSimbolos = 1;
+    lenSimbolos = 0;
 		yyin = fopen(argv[1], "r");  // yyin por defecto es el archivo de entrada
     salida = fopen("salida.txt", "w");
     logs = fopen("logs.txt", "w");
