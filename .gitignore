@@ -1,4 +1,4 @@
 lex.yy.c
-salida.txt
+*.txt
 *.o
 Estructuras\ Dinamicas/

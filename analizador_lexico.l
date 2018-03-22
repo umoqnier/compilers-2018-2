@@ -73,10 +73,10 @@ cteSimbol      [A-Z]{1,8}
     if(iguales == 0){
        printf("Reservada **%s** encontrada\n", clase0[i]);
        t.valor = i;
-       ++lenTokens;
+       lenTokens++;
        tokens = agregaToken(tokens, t);
-       printf("Current state --> token(0,%d)\n", t.valor);
-       fprintf(salida, "Current state --> token(0,%d)\n", i);
+       printf("current state --> token(%d,%d)\n", tokens[lenTokens-1].clase, tokens[lenTokens-1].valor);
+       fprintf(salida, "current state --> token(%d,%d)\n", tokens[lenTokens-1].clase, tokens[lenTokens-1].valor);
        break;
     }
   }
@@ -114,8 +114,8 @@ cteSimbol      [A-Z]{1,8}
   }
   lenTokens++;
   tokens = agregaToken(tokens, t);
-  printf("Current state --> token(1,%d)\n", t.valor);
-  fprintf(salida, "Current state --> token(1,%d)\n", t.valor);
+  printf("current state --> token(%d,%d)\n", tokens[lenTokens-1].clase, tokens[lenTokens-1].valor);
+  fprintf(salida, "current state --> token(%d,%d)\n", tokens[lenTokens-1].clase, tokens[lenTokens-1].valor);
 }
 
 {valCteSimbol} {
@@ -128,28 +128,38 @@ cteSimbol      [A-Z]{1,8}
   strcpy(cs.constante, yytext);
   lenCteSimbolicas++;
   tablaCteS = agregaConstanteS(tablaCteS, cs);
-  t.valor = lenCteSimbolicas - 1;
+  t.valor = lenSimbolos - 1;
   lenTokens++;
   tokens = agregaToken(tokens, t);
-  printf("Current state --> token(%d,%d)\n", t.clase, t.valor);
-  fprintf(salida, "Current state --> token(%d,%d)\n", t.clase, t.valor);
+  printf("current state --> token(%d,%d)\n", tokens[lenTokens-1].clase, tokens[lenTokens-1].valor);
+  fprintf(salida, "current state --> token(%d,%d)\n", tokens[lenTokens-1].clase, tokens[lenTokens-1].valor);
 }
 
 {entero} {
   printf("\nEntero **%s** encontrado\n", yytext);
-  fprintf(salida, "=== %s === es entero\n", yytext);
-  fprintf(salida, "token(3,%d)\n",atoi(yytext));
+  Token t;
+  lenTokens++;
+  t.clase = 3;
+  t.valor = atoi(yytext);
+  tokens = agregaToken(tokens, t);
+  printf("current state --> token(%d,%d)\n", tokens[lenTokens-1].clase, tokens[lenTokens-1].valor);
+  fprintf(salida, "current state --> token(%d,%d)\n", tokens[lenTokens-1].clase, tokens[lenTokens-1].valor);
+
 }
 
 {opAri} {
   printf("\bEn OP ARIT --> %s", yytext);
-  fprintf(salida, "=== %s === es operador aritmetico\n", yytext);
-  int i=0;
-  char iguales;
-  for(i;i<5;i++){
-    iguales = strcmp(clase7[i],yytext);
+  char iguales, i;
+  Token t;
+  t.clase = 7;
+  for(i = 0; i < 5; i++){
+    iguales = strcmp(clase7[i], yytext);
     if(!iguales){
-        fprintf(salida,"token(7,%d)\n", i);
+        t.valor = i;
+        lenTokens++;
+        tokens = agregaToken(tokens, t);
+        printf("current state --> token(%d,%d)\n", tokens[lenTokens-1].clase, tokens[lenTokens-1].valor);
+        fprintf(salida, "current state --> token(%d,%d)\n", tokens[lenTokens-1].clase, tokens[lenTokens-1].valor);
         break;
     }
   }
@@ -157,13 +167,17 @@ cteSimbol      [A-Z]{1,8}
 
 {opRel} {
   printf("\nEn OP REL --> %s", yytext);
-  fprintf(salida, "=== %s === es operador relacional\n", yytext);
-  int i=0;
-  char iguales;
-  for(i;i<7;i++){
+  char iguales, i;
+  Token t;
+  t.clase = 4;
+  for(i = 0; i < 7 ;i++){
 	iguales = strcmp(clase4[i],yytext);
 	  if(!iguales){
-		  fprintf(salida,"token(4,%d)\n",i);
+		  t.valor = i;
+      lenTokens++;
+      tokens = agregaToken(tokens, t);
+      printf("current state --> token(%d,%d)\n", tokens[lenTokens-1].clase, tokens[lenTokens-1].valor);
+      fprintf(salida, "current state --> token(%d,%d)\n", tokens[lenTokens-1].clase, tokens[lenTokens-1].valor);
   		break;
 	  }
   }
@@ -175,7 +189,6 @@ cteSimbol      [A-Z]{1,8}
 ======================================*/
 
 Token *agregaToken(Token *arr, Token new){
-  printf("Len Tokens: %d\n", lenTokens);
   if(lenTokens == 1){
     arr[0] = new;
   }else{
@@ -201,6 +214,9 @@ CteSimbolica *agregaConstanteS(CteSimbolica *arr, CteSimbolica nuevaConstante){
   return arr;
 };
 
+/* ======================================
+    Funciones para manejo de tablas de lineas a analizar
+======================================*/
 void agregaLineaCodigo(char *t, char *codigo){
   ++lenTablaCodigo;
   t[lenTablaCodigo] = (char *)malloc(strlen(codigo)*sizeof(char));  // Crea el espacio necesario para el string del codigo
@@ -228,8 +244,9 @@ Simbolo *agregaSimbolo(Simbolo *arr, Simbolo new){
 ======================================*/
 void imprimeTokens(Token *arr){
   char i;
-  for(i = 0; i < lenTokens; i++){
-    fprintf(logs, "token(%d,%d)", arr[i].clase, arr[i].valor);
+  fprintf(logs, "===============TOKENS===============\n")
+  for(i = 0; i < lenTokens; i++){}
+    fprintf(logs, "token(%d,%d)\n", arr[i].clase, arr[i].valor);
   }
 }
 
@@ -247,8 +264,10 @@ void main(int argc, char *argv[]){
     salida = fopen("salida.txt", "w");
     logs = fopen("logs.txt", "w");
     yylex();
+    imprimeTokens(tokens);
     free(simbolos);
     free(tokens);
+    free(tablaCteS);
     fclose(salida);
     fclose(logs);
 	}
