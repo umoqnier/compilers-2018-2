@@ -23,15 +23,22 @@ typedef struct{
   char *constante;
 }CteSimbolica;
 
+typedef struct{
+  char *codigo;
+}codAnaliza;
+
+
 /* Prototipos de funciones */
 Token *agregaToken(Token *, Token);
 Simbolo *agregaSimbolo(Simbolo *, Simbolo);
 CteSimbolica *agregaConstanteS(CteSimbolica *, CteSimbolica);
+codAnaliza *agregaCodAnaliza(codAnaliza *, codAnaliza);
 
 Token *tokens; // Arreglo (tabla) de tokens
 Simbolo *simbolos; // Arreglo (tabla) de símbolos
 CteSimbolica *tablaCteS;  // Arreglo de strings para constantes simbolicas
-char **tablaCodigoAnalizar;  // Arreglo de strings para código
+codAnaliza *tablaCodigoAnalizar;  // Arreglo de strings para código
+
 int lenTokens = 0; // Longitud de la tabla de tokens
 int lenSimbolos = 0;  // Longitud de  la tabla de simbolos
 int lenCteSimbolicas = 0;  // Longitud de la  tabla de constantes simbolicas
@@ -59,11 +66,25 @@ cteSimbol      [A-Z]{1,8}
 %%
 
 {lineaCodigo} {
-  fprintf(salida, "=== %s === codigo a analizar\n", yytext);
+  //fprintf(salida, "=== %s === codigo a analizar\n", yytext);
+  printf("%s||| codigo a analizar\n", yytext);
+  Token t;
+  codAnaliza ca;
+  t.clase = 5;
+  ca.codigo = (char *)malloc(strlen(yytext)*sizeof(char));
+  strcpy(ca.codigo, yytext);
+  printf("SE COPIO: %s\n",ca.codigo);
+  lenTablaCodigo++;
+  tablaCodigoAnalizar = agregaCodAnaliza(tablaCodigoAnalizar, ca);
+  t.valor = lenTablaCodigo - 1;
+  lenTokens++;
+  tokens = agregaToken(tokens, t);
+  printf("Current state --> token(%d,%d)\n", t.clase, t.valor);
+  fprintf(salida, "Current state --> token(%d,%d)\n", t.clase, t.valor);
 }
 
 {reservadas} {
-  fprintf(salida, "=== %s === reservada\n", yytext);
+  //fprintf(salida, "=== %s === reservada\n", yytext);
   short i, j;
   char iguales;
   Token t; // Declaración de un token
@@ -222,7 +243,7 @@ void agregaLineaCodigo(char *t, char *codigo){
   t[lenTablaCodigo] = (char *)malloc(strlen(codigo)*sizeof(char));  // Crea el espacio necesario para el string del codigo
   strcpy(t[lenTablaCodigo], codigo);
 }
-
+=======
 /* ======================================
     Funciones para Tabla de simbolos
 ======================================*/
@@ -238,6 +259,23 @@ Simbolo *agregaSimbolo(Simbolo *arr, Simbolo new){
   }
   return arr;
 };
+
+/* ======================================
+  Funciones de linea de codigo a analizar
+======================================*/
+
+codAnaliza *agregaCodAnaliza(codAnaliza *arr,codAnaliza ca){
+	printf("Len Codigo Analiza: %d, %s\n", lenTablaCodigo,ca.codigo);
+  	if(lenTablaCodigo == 1){
+    		arr = (codAnaliza *)realloc(arr, lenTablaCodigo * sizeof(codAnaliza));
+		arr[0] = ca;
+  	}else{
+    		arr = (codAnaliza *)realloc(arr, lenTablaCodigo * sizeof(codAnaliza));
+    		arr[lenTablaCodigo - 1] = ca;
+  	}
+
+  return arr;
+}
 
 /* ======================================
     Funciones de impresion
