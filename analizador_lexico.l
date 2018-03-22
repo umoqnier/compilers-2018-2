@@ -243,7 +243,7 @@ void agregaLineaCodigo(char *t, char *codigo){
   t[lenTablaCodigo] = (char *)malloc(strlen(codigo)*sizeof(char));  // Crea el espacio necesario para el string del codigo
   strcpy(t[lenTablaCodigo], codigo);
 }
-=======
+
 /* ======================================
     Funciones para Tabla de simbolos
 ======================================*/
@@ -282,8 +282,8 @@ codAnaliza *agregaCodAnaliza(codAnaliza *arr,codAnaliza ca){
 ======================================*/
 void imprimeTokens(Token *arr){
   char i;
-  fprintf(logs, "===============TOKENS===============\n")
-  for(i = 0; i < lenTokens; i++){}
+  fprintf(logs, "===============TOKENS===============\n");
+  for(i = 0; i < lenTokens; i++){
     fprintf(logs, "token(%d,%d)\n", arr[i].clase, arr[i].valor);
   }
 }
