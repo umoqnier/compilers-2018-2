@@ -187,14 +187,14 @@ cteSimbol      [A-Z]{1,8}
 {especial} {
 	printf("\nSimbolo especial|  %s  |encontrado",yytext);
 	Token t;
-	char iguales = strcmp(clase6[0],yytext);
+	char iguales = strcmp(clase6[0], yytext);
 	t.clase = 6;
 	if(!iguales)
 		t.valor = 0;
 	else
 		t.valor = 1;
 	lenTokens++;
-      	tokens = agregaToken(tokens, t);
+  tokens = agregaToken(tokens, t);
 }
 %%
 
@@ -277,7 +277,7 @@ void imprimeTokens(Token *arr){
   char i;
   fprintf(salida, "===============TOKENS===============\n");
   for(i = 0; i < lenTokens; i++){
-    fprintf(salida, "token(%d,%d)\n", arr[i].clase, arr[i].valor);
+    fprintf(salida, "token(%d, %d)\n", arr[i].clase, arr[i].valor);
   }
 }
 
@@ -285,14 +285,14 @@ void imprimeLineaCodigo(){
   	char i;
   	fprintf(salida, "===============Lineas a analizar===============\n");
   	for(i = 0; i < lenTablaCodigo; i++)
-    		fprintf(salida, "|%d ,%s|\n",i, tablaCodigoAnalizar[i].codigo);
+    		fprintf(salida, "|%d, %s|\n",i, tablaCodigoAnalizar[i].codigo);
 }
 
 void imprimeCteSim(CteSimbolica *arr){
 	char i;
   	fprintf(salida, "===============Constantes Simbolicas===============\n");
   	for(i = 0; i < lenCteSimbolicas; i++)
-   		fprintf(salida, "|%d,%s|\n",i, arr[i].constante);
+   		fprintf(salida, "|%d, %s|\n",i, arr[i].constante);
 }
 
 void imprimeSimbolos(Simbolo *arr){

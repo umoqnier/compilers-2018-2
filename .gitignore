@@ -3,3 +3,5 @@ lex.yy.c
 *.o
 Estructuras\ Dinamicas/
 .idea/
+*.pdf
+*.zip
