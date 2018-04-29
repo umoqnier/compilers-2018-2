@@ -50,6 +50,7 @@ char *clase7[] = {"+","-","*","/","%"};
 
 %}
 
+blank          [\n\t\r]+
 comentario     (\/\/.*|\/\*(.|\n)+\*\/)$
 especial       [()]
 lineaCodigo    ^([^#].*)
@@ -58,14 +59,15 @@ mantReal       ({dig}*\.{dig}+|{dig}+\.{dig})
 entero         ([1-9]{dig}*|0)
 opRel          >|>=|<|<=|==|!=
 opAri          \+|\-|\*|\/|%
-reservadas     #define|#elif|#else|#endif|#if|#ifdef|#ifndef|#undef
+reservadas     ^(#define|#elif|#else|#endif|#if|#ifdef|#ifndef|#undef)
 valCteSimbol   \"({mantReal}|{entero})\"
 cteSimbol      [A-Z]{1,8}
 
 %%
 
-{lineaCodigo} {
+{blank} {printf("\nLinea en blanco descartada\n");}
 
+{lineaCodigo} {
   printf("Codigo a analizar **%s** encontrado", yytext);
   Token t;
   codAnaliza ca;
@@ -80,7 +82,6 @@ cteSimbol      [A-Z]{1,8}
 }
 
 {reservadas} {
-
   short i, j;
   char iguales;
   Token t; // Declaración de un token
