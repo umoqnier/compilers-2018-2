@@ -27,7 +27,7 @@ typedef struct{
 }codAnaliza;
 
 typedef struct{
-  char *car;
+  char car;
 }Atomo;
 
 
@@ -42,6 +42,7 @@ Token *tokens; // Arreglo (tabla) de tokens
 Simbolo *simbolos; // Arreglo (tabla) de símbolos
 CteSimbolica *tablaCteS;  // Arreglo de strings para constantes simbolicas
 codAnaliza *tablaCodigoAnalizar;  // Arreglo de strings para código
+Atomo *cadAtomix;  // Cadena de atomos
 
 int lenTokens = 0; // Longitud de la tabla de tokens
 int lenSimbolos = 0;  // Longitud de  la tabla de simbolos
@@ -55,18 +56,21 @@ char *clase6[] = {"(",")"};
 char *clase7[] = {"+","-","*","/","%"};
 
 /* Para el parser */
-Atomo *cadAtomix;  // Cadena de atomos
 char caracter;  // Variable para leer caracteres de la cadena de atomos
 
 /* Átomos por clase*/
-char *atomos0[] = {"d","f","l","n","i","t","m","u"};
+
+char atomos0[8] = {'d','f','l','n','i','t','m','u'};
+char atomos4[6] = {'>','g','<','p','q','r'};
+char atomos7[5] = {'+','-','*','/','%'};
+/*char *atomos0[] = {"d","f","l","n","i","t","m","u"};
 char *atomo1 = "a";
 char *atomo2 = "s";
 char *atomo3 = "e";
 char *atomos4[] = {">", "g", "<", "p", "q", "r"};
 char *atomo5 = "c";
 char *atomos6[] = {"(", ")"};
-char *atomos7[] = {"+", "-", "*", "/", "%"};
+char *atomos7[] = {"+", "-", "*", "/", "%"};*/
 
 %}
 
@@ -89,42 +93,44 @@ cteSimbol      [A-Z]{1,8}
 
 {lineaCodigo} {
   printf("\nCodigo a analizar **%s** encontrado", yytext);
-  printf("\nATOMO: %s", atomo5);
   Token t;
   Atomo a;
   codAnaliza ca;
   t.clase = 5;
   ca.codigo = (char *)malloc(strlen(yytext)*sizeof(char));
   strcpy(ca.codigo, yytext);
-  a.car = (char *)malloc(1 * sizeof(char));
-  strcpy(a.car, atomo5);
+  a.car = 'c';
+  printf("\nATOMO: %c", a.car);
   lenTablaCodigo++;
   tablaCodigoAnalizar = agregaCodAnaliza(tablaCodigoAnalizar, ca);
   t.valor = lenTablaCodigo - 1;
   lenTokens++;
   tokens = agregaToken(tokens, t);
   lenAtomos++;
+  printf("\nLEN ATOMOS: %d", lenAtomos);
   cadAtomix = agregaAtomo(cadAtomix, a);
+  printf("\nCADENA: %c", cadAtomix[lenAtomos-1].car);
 }
 
 {reservadas} {
   short i, j;
   char iguales;
   Token t; // Declaración de un token
-  Atomo a;
+  Atomo at;  // Declaración de un atomo
   t.clase = 0;
   for(i = 0; i < 8; i++){
     iguales = strcmp(clase0[i], yytext);
     if(iguales == 0){
        printf("Palabra Reservada **%s** encontrada", clase0[i]);
-       printf("\nATOMO: %s", atomos0[i]);
        t.valor = i;
        lenTokens++;
        tokens = agregaToken(tokens, t);
-       a.car = (char *)malloc(1 * sizeof(char));
-       strcpy(a.car, atomos0[i]);
+       at.car = atomos0[i];
+       printf("\nATOMO: %c", at.car);
        lenAtomos++;
-       cadAtomix = agregaAtomo(cadAtomix, a);
+       printf("\nLEN ATOMOS: %d", lenAtomos);
+       cadAtomix = agregaAtomo(cadAtomix, at);
+       printf("\nCADENA: %c", cadAtomix[lenAtomos-1].car);
        break;
     }
   }
@@ -132,7 +138,6 @@ cteSimbol      [A-Z]{1,8}
 
 {cteSimbol} {
   printf("\nConstante simbolica **%s** encontrada", yytext);
-  printf("\nATOMO: %s", atomo1);
   Token t;
   Simbolo s;
   Atomo a;
@@ -161,15 +166,16 @@ cteSimbol      [A-Z]{1,8}
   }
   lenTokens++;
   tokens = agregaToken(tokens, t);
-  a.car = (char *)malloc(1 * sizeof(char));
-  strcpy(a.car, atomo1);
+  a.car = 'a';
+  printf("\nATOMO: %c", a.car);
   lenAtomos++;
+  printf("\nLEN ATOMOS: %d", lenAtomos);
   cadAtomix = agregaAtomo(cadAtomix, a);
+  printf("\nCADENA: %c", cadAtomix[lenAtomos - 1].car);
 }
 
 {valCteSimbol} {
   printf("\nValor constante simbolica **%s** encontrada", yytext);
-  printf("\nATOMO: %s", atomo2);
   char i, iguales, bandera = 0;
   Token t;
   CteSimbolica cs;
@@ -182,25 +188,28 @@ cteSimbol      [A-Z]{1,8}
   t.valor = lenSimbolos - 1;
   lenTokens++;
   tokens = agregaToken(tokens, t);
-  a.car = (char *)malloc(1 * sizeof(char));
-  strcpy(a.car, atomo2);
+  a.car = 's';
+  printf("\nATOMO: %c", a.car);
   lenAtomos++;
+  printf("\nLEN ATOMOS: %d", lenAtomos);
   cadAtomix = agregaAtomo(cadAtomix, a);
+  printf("\nCADENA: %c", cadAtomix[lenAtomos - 1].car);
 }
 
 {entero} {
   printf("\nEntero **%s** encontrado", yytext);
-  printf("\nATOMO: %s", atomo3);
   Token t;
   Atomo a;
   lenTokens++;
   t.clase = 3;
   t.valor = atoi(yytext);
   tokens = agregaToken(tokens, t);
-  a.car = (char *)malloc(1 * sizeof(char));
-  strcpy(a.car, atomo3);
+  a.car = 'e';
+  printf("\nATOMO: %c", a.car);
   lenAtomos++;
+  printf("\nLEN ATOMOS: %d", lenAtomos);
   cadAtomix = agregaAtomo(cadAtomix, a);
+  printf("\nCADENA: %c", cadAtomix[lenAtomos - 1].car);
 }
 
 {opAri} {
@@ -215,11 +224,12 @@ cteSimbol      [A-Z]{1,8}
         t.valor = i;
         lenTokens++;
         tokens = agregaToken(tokens, t);
-        a.car = (char *)malloc(1 * sizeof(char));
-        strcpy(a.car, atomos7[i]);
-        printf("\nATOMO: %s", atomos7[i]);
+        a.car = atomos7[i];
+        printf("\nATOMO: %c", a.car);
         lenAtomos++;
+        printf("\nLEN ATOMOS: %d", lenAtomos);
         cadAtomix = agregaAtomo(cadAtomix, a);
+        printf("\nCADENA: %c", cadAtomix[lenAtomos - 1].car);
         break;
     }
   }
@@ -237,11 +247,12 @@ cteSimbol      [A-Z]{1,8}
 		  t.valor = i;
       lenTokens++;
       tokens = agregaToken(tokens, t);
-      a.car = (char *)malloc(1 * sizeof(char));
-      strcpy(a.car, atomos4[i]);
-      printf("\nATOMO: %s", atomos4[i]);
+      a.car = atomos4[i];
+      printf("\nATOMO: %c", a.car);
       lenAtomos++;
+      printf("\nLEN ATOMOS: %d", lenAtomos);
       cadAtomix = agregaAtomo(cadAtomix, a);
+      printf("\nCADENA: %c", cadAtomix[lenAtomos - 1].car);
   		break;
 	  }
   }
@@ -253,19 +264,21 @@ cteSimbol      [A-Z]{1,8}
   Atomo a;
 	char iguales = strcmp(clase6[0], yytext);
 	t.clase = 6;
-  a.car = (char *)malloc(1 * sizeof(char));
   lenAtomos++;
+  printf("\nLEN ATOMOS: %d", lenAtomos);
 	if(!iguales){
 		t.valor = 0;
-    printf("\nATOMO: %s", atomos6[0]);
-    strcpy(a.car, atomos6[0]);
+    a.car = '(';
+    printf("\nATOMO: %c", a.car);
     cadAtomix = agregaAtomo(cadAtomix, a);
+    printf("\nCADENA: %c", cadAtomix[lenAtomos - 1].car);
   }
 	else{
 		t.valor = 1;
-    printf("\nATOMO: %s", atomos6[1]);
-    strcpy(a.car, atomos6[1]);
+    a.car = ')';
+    printf("\nATOMO: %c", a.car);
     cadAtomix = agregaAtomo(cadAtomix, a);
+    printf("\nCADENA: %c", cadAtomix[lenAtomos - 1].car);
   }
 	lenTokens++;
   tokens = agregaToken(tokens, t);
@@ -302,14 +315,6 @@ CteSimbolica *agregaConstanteS(CteSimbolica *arr, CteSimbolica nuevaConstante){
   return arr;
 };
 
-/* ===================================
-    Funciones para manejo de tablas de lineas a analizar
-======================================*/
-void agregaLineaCodigo(char *t, char *codigo){
-  ++lenTablaCodigo;
-  t[lenTablaCodigo] = (char *)malloc(strlen(codigo)*sizeof(char));  // Crea el espacio necesario para el string del codigo
-  strcpy(t[lenTablaCodigo], codigo);
-}
 
 /* ===================================
     Funciones para Tabla de simbolos
@@ -317,7 +322,8 @@ void agregaLineaCodigo(char *t, char *codigo){
 
 Simbolo *agregaSimbolo(Simbolo *arr, Simbolo new){
   //printf("Len simbolos: %d\n", lenSimbolos);
-  if(lenSimbolos == 1){ // No se necesita realloc por que se inicializa el arreglo de simbolos en main()
+
+  if(lenSimbolos == 1){ // No se necesita( realloc por que se inicializa el arreglo de simbolos en main()
     arr[0] = new;
   }
   else{
@@ -331,17 +337,29 @@ Simbolo *agregaSimbolo(Simbolo *arr, Simbolo new){
   Funciones de linea de codigo a analizar
 ======================================*/
 
-codAnaliza *agregaCodAnaliza(codAnaliza *arr,codAnaliza ca){
+codAnaliza *agregaCodAnaliza(codAnaliza *arr, codAnaliza ca){
 	//printf("Len Codigo Analiza: %d, %s\n", lenTablaCodigo,ca.codigo);
   	if(lenTablaCodigo == 1){
-    		arr = (codAnaliza *)realloc(arr, lenTablaCodigo * sizeof(codAnaliza));
-		arr[0] = ca;
+		    arr[0] = ca;
   	}else{
-    		arr = (codAnaliza *)realloc(arr, lenTablaCodigo * sizeof(codAnaliza));
+        arr = (codAnaliza *)realloc(arr, lenTablaCodigo*sizeof(codAnaliza));
     		arr[lenTablaCodigo - 1] = ca;
   	}
 
   return arr;
+}
+
+/* ======================================
+    Funcion que manjea la cadena de atomos
+======================================*/
+Atomo *agregaAtomo(Atomo *arr, Atomo at){
+  if(lenAtomos == 1){
+    arr[0] = at;
+  }else{
+    printf("\nAT SECOND ADD ATOM");
+    arr = (Atomo *)realloc(arr, (lenAtomos)*sizeof(Atomo));
+    arr[lenAtomos - 1] = at;
+  }
 }
 
 /* ======================================
@@ -385,19 +403,7 @@ void imprimeAtomos(Atomo *arr){
   printf("IMPRIME ATOMOS %d", lenAtomos);
   fprintf(salida, "===============Atomos===============\n");
   for(i = 0; i < lenAtomos; i++)
-      fprintf(salida, "|%s|\n", arr[i].car);
-}
-
-/* ======================================
-    Funcion que manjea la cadena de atomos
-======================================*/
-Atomo *agregaAtomo(Atomo *arr, Atomo c){
-  if(lenAtomos == 1){
-    arr[0] = c;
-  }else{
-    arr = (Atomo *)realloc(arr, lenAtomos * sizeof(Atomo));
-    arr[lenAtomos - 1] = c;
-  }
+      fprintf(salida, "|%c|\n", arr[i].car);
 }
 
 /* ======================================
@@ -727,6 +733,7 @@ void main(int argc, char *argv[]){
     tokens = (Token *)malloc(1*sizeof(Token));  // Inicializado a un elemento token. Al menos debe existir uno
     simbolos = (Simbolo *)malloc(1*sizeof(Simbolo));  // Inicializando a un elemento simbolo. Al menos debe existir uno
     tablaCteS = (CteSimbolica *)malloc(1*sizeof(CteSimbolica));
+    tablaCodigoAnalizar = (codAnaliza *)malloc(1*sizeof(codAnaliza));
     cadAtomix = (Atomo *)malloc(1*sizeof(Atomo));
 		yyin = fopen(argv[1], "r");  // yyin por defecto es el archivo de entrada
     salida = fopen("salida.txt", "w");
