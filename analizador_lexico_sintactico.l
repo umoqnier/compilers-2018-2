@@ -113,8 +113,7 @@ cteSimbol      [A-Z]{1,8}
 }
 
 {reservadas} {
-  short i, j;
-  char iguales;
+  uint8_t iguales, i;
   Token t; // Declaración de un token
   Atomo at;  // Declaración de un atomo
   t.clase = 0;
@@ -138,13 +137,10 @@ cteSimbol      [A-Z]{1,8}
 
 {cteSimbol} {
   printf("\nConstante simbolica **%s** encontrada", yytext);
+  uint8_t i, iguales, tamSimb, bandera = 0;
   Token t;
   Simbolo s;
   Atomo a;
-  char i;
-  short tamSimb;
-  char iguales;
-  char bandera = 0;
   s.valor = -1;
   s.alcance = -1;
   t.clase = 1;
@@ -176,7 +172,6 @@ cteSimbol      [A-Z]{1,8}
 
 {valCteSimbol} {
   printf("\nValor constante simbolica **%s** encontrada", yytext);
-  char i, iguales, bandera = 0;
   Token t;
   CteSimbolica cs;
   Atomo a;
@@ -214,7 +209,7 @@ cteSimbol      [A-Z]{1,8}
 
 {opAri} {
   printf("\nOperador aritmetico|  %s  |encontrado", yytext);
-  char iguales, i;
+  uint8_t iguales, i;
   Token t;
   Atomo a;
   t.clase = 7;
@@ -237,7 +232,7 @@ cteSimbol      [A-Z]{1,8}
 
 {opRel} {
   printf("\nOperador relacional|  %s  |encontrado", yytext);
-  char iguales, i;
+  uint8_t iguales, i;
   Token t;
   Atomo a;
   t.clase = 4;
@@ -262,7 +257,7 @@ cteSimbol      [A-Z]{1,8}
 	printf("\nSimbolo especial|  %s  |encontrado",yytext);
 	Token t;
   Atomo a;
-	char iguales = strcmp(clase6[0], yytext);
+	uint8_t iguales = strcmp(clase6[0], yytext);
 	t.clase = 6;
   lenAtomos++;
   printf("\nLEN ATOMOS: %d", lenAtomos);
@@ -356,17 +351,17 @@ Atomo *agregaAtomo(Atomo *arr, Atomo at){
   if(lenAtomos == 1){
     arr[0] = at;
   }else{
-    printf("\nAT SECOND ADD ATOM");
-    arr = (Atomo *)realloc(arr, (lenAtomos)*sizeof(Atomo));
+    arr = (Atomo *)realloc(arr, lenAtomos*sizeof(Atomo));
     arr[lenAtomos - 1] = at;
   }
+  return arr;
 }
 
 /* ======================================
     Funciones de escritura
 ======================================*/
 void imprimeTokens(Token *arr){
-  char i;
+  uint8_t i;
   fprintf(salida, "===============TOKENS===============\n");
   for(i = 0; i < lenTokens; i++){
     fprintf(salida, "token(%d, %d)\n", arr[i].clase, arr[i].valor);
@@ -374,21 +369,21 @@ void imprimeTokens(Token *arr){
 }
 
 void imprimeLineaCodigo(){
-  	char i;
+  	uint8_t i;
   	fprintf(salida, "===============Lineas a analizar===============\n");
   	for(i = 0; i < lenTablaCodigo; i++)
     		fprintf(salida, "|%d, %s|\n",i, tablaCodigoAnalizar[i].codigo);
 }
 
 void imprimeCteSim(CteSimbolica *arr){
-	char i;
-  	fprintf(salida, "===============Constantes Simbolicas===============\n");
+	uint8_t i;
+  fprintf(salida, "===============Constantes Simbolicas===============\n");
   	for(i = 0; i < lenCteSimbolicas; i++)
    		fprintf(salida, "|%d, %s|\n",i, arr[i].constante);
 }
 
 void imprimeSimbolos(Simbolo *arr){
-  char i;
+  uint8_t i;
   fprintf(salida, "===============Simbolos===============\n");
   for(i = 0; i < lenSimbolos; i++)
       fprintf(salida, "|%d , %s, %d, %d|\n", i, arr[i].nombre, arr[i].valor, arr[i].alcance);
@@ -399,11 +394,12 @@ void imprimeSimbolos(Simbolo *arr){
 ======================================*/
 
 void imprimeAtomos(Atomo *arr){
-  char i;
-  printf("IMPRIME ATOMOS %d", lenAtomos);
+  uint8_t i;  
   fprintf(salida, "===============Atomos===============\n");
+  fprintf(salida, "|");
   for(i = 0; i < lenAtomos; i++)
-      fprintf(salida, "|%c|\n", arr[i].car);
+      fprintf(salida, "%c", arr[i].car);
+  fprintf(salida, "|\n");
 }
 
 /* ======================================
@@ -726,7 +722,7 @@ void rechazar(){
 /* ======================================
     Función principal
 ======================================*/
-void main(int argc, char *argv[]){
+int main(int argc, char *argv[]){
   if ( argc != 2 )  // Se ingresa solo un argumento
 		printf( "El programa: %s requiere el nombre del archivo como segundo argumento.\n", argv[0] );
 	else{
@@ -753,5 +749,6 @@ void main(int argc, char *argv[]){
     free(cadAtomix);
     fclose(salida);
 
+    return 0;
 	}
 }
