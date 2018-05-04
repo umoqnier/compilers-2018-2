@@ -40,6 +40,25 @@ Atomo *agregaAtomo(Atomo *, Atomo);
 char obtenerAtomo(Atomo *);
 void agregaFinCadena();
 Atomo *actualizaAtomos(Atomo *);
+void SimboloInicial();
+void CPrep();
+void CompCond();
+void lineaIf();
+void texto();
+void elseOp();
+void define();
+void undef();
+void E();
+void EP();
+void T();
+void TP();
+void F();
+void operadorRel();
+void parser();
+void error();
+void aceptar();
+void rechazar();
+
 
 Token *tokens; // Arreglo (tabla) de tokens
 Simbolo *simbolos; // Arreglo (tabla) de símbolos
