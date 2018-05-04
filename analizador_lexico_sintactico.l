@@ -409,7 +409,7 @@ void imprimeAtomosConsola(Atomo *arr){
 
 void agregaFinCadena(){
   Atomo a;
-  a.car = '\0';
+  a.car = '$';
   lenAtomos++;
   cadAtomix = agregaAtomo(cadAtomix, a);
 }
@@ -418,6 +418,7 @@ Atomo *actualizaAtomos(Atomo *arr){
    uint8_t i;
    for(i = 0; i < lenAtomos - 1; i++)
        arr[i] = arr[i+1];
+   lenAtomos--;
    return arr;
 }
 
@@ -463,7 +464,7 @@ void CPrep(){
   if(caracter == 'c' || caracter == 'i' || caracter == 't' || caracter == 'm' || caracter == 'd' || caracter == 'u'){
     SimboloInicial();
   }else{
-    if(caracter == '\0')
+    if(caracter == '$')
       return;
     else
       error();
@@ -667,7 +668,7 @@ void EP(){
     T();
     EP();
     return;
-  }else if(caracter == ')' || caracter == '\0')
+  }else if(caracter == ')' || caracter == '$')
           return;
         else
           error();
@@ -747,7 +748,7 @@ void parser(Atomo *cadAtomix){
   char caracter = obtenerAtomo(cadAtomix);
 	cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
   SimboloInicial();
-  if (caracter == '\0')
+  if (caracter == '$')
     aceptar();
   else
     rechazar();
