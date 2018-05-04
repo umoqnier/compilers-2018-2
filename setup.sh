@@ -7,4 +7,4 @@ flex analizador_lexico_sintactico.l
 gcc -Wpedantic -lfl lex.yy.c -o analizador_lexico_sintactico.o
 
 # Ejecución del binario con archivo a analizar como argumento
-./analizador_lexico_sintactico.o example.c
+./analizador_lexico_sintactico.o example_accept.c

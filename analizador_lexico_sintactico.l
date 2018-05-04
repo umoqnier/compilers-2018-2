@@ -40,6 +40,7 @@ Atomo *agregaAtomo(Atomo *, Atomo);
 char obtenerAtomo(Atomo *);
 void agregaFinCadena();
 Atomo *actualizaAtomos(Atomo *);
+void imprimeAtomosConsola(Atomo *);
 void SimboloInicial();
 void CPrep();
 void CompCond();
@@ -48,6 +49,7 @@ void texto();
 void elseOp();
 void define();
 void undef();
+void expConstante();
 void E();
 void EP();
 void T();
@@ -122,16 +124,13 @@ cteSimbol      [A-Z]{1,8}
   ca.codigo = (char *)malloc(strlen(yytext)*sizeof(char));
   strcpy(ca.codigo, yytext);
   a.car = 'c';
-  printf("\nATOMO: %c", a.car);
   lenTablaCodigo++;
   tablaCodigoAnalizar = agregaCodAnaliza(tablaCodigoAnalizar, ca);
   t.valor = lenTablaCodigo - 1;
   lenTokens++;
   tokens = agregaToken(tokens, t);
   lenAtomos++;
-  printf("\nLEN ATOMOS: %d", lenAtomos);
   cadAtomix = agregaAtomo(cadAtomix, a);
-  printf("\nCADENA: %c", cadAtomix[lenAtomos-1].car);
 }
 
 {reservadas} {
@@ -147,11 +146,8 @@ cteSimbol      [A-Z]{1,8}
        lenTokens++;
        tokens = agregaToken(tokens, t);
        at.car = atomos0[i];
-       printf("\nATOMO: %c", at.car);
        lenAtomos++;
-       printf("\nLEN ATOMOS: %d", lenAtomos);
        cadAtomix = agregaAtomo(cadAtomix, at);
-       printf("\nCADENA: %c", cadAtomix[lenAtomos-1].car);
        break;
     }
   }
@@ -185,11 +181,8 @@ cteSimbol      [A-Z]{1,8}
   lenTokens++;
   tokens = agregaToken(tokens, t);
   a.car = 'a';
-  printf("\nATOMO: %c", a.car);
   lenAtomos++;
-  printf("\nLEN ATOMOS: %d", lenAtomos);
   cadAtomix = agregaAtomo(cadAtomix, a);
-  printf("\nCADENA: %c", cadAtomix[lenAtomos - 1].car);
 }
 
 {valCteSimbol} {
@@ -206,11 +199,8 @@ cteSimbol      [A-Z]{1,8}
   lenTokens++;
   tokens = agregaToken(tokens, t);
   a.car = 's';
-  printf("\nATOMO: %c", a.car);
   lenAtomos++;
-  printf("\nLEN ATOMOS: %d", lenAtomos);
   cadAtomix = agregaAtomo(cadAtomix, a);
-  printf("\nCADENA: %c", cadAtomix[lenAtomos - 1].car);
 }
 
 {entero} {
@@ -222,11 +212,8 @@ cteSimbol      [A-Z]{1,8}
   t.valor = atoi(yytext);
   tokens = agregaToken(tokens, t);
   a.car = 'e';
-  printf("\nATOMO: %c", a.car);
   lenAtomos++;
-  printf("\nLEN ATOMOS: %d", lenAtomos);
   cadAtomix = agregaAtomo(cadAtomix, a);
-  printf("\nCADENA: %c", cadAtomix[lenAtomos - 1].car);
 }
 
 {opAri} {
@@ -242,11 +229,8 @@ cteSimbol      [A-Z]{1,8}
         lenTokens++;
         tokens = agregaToken(tokens, t);
         a.car = atomos7[i];
-        printf("\nATOMO: %c", a.car);
         lenAtomos++;
-        printf("\nLEN ATOMOS: %d", lenAtomos);
         cadAtomix = agregaAtomo(cadAtomix, a);
-        printf("\nCADENA: %c", cadAtomix[lenAtomos - 1].car);
         break;
     }
   }
@@ -265,11 +249,8 @@ cteSimbol      [A-Z]{1,8}
       lenTokens++;
       tokens = agregaToken(tokens, t);
       a.car = atomos4[i];
-      printf("\nATOMO: %c", a.car);
       lenAtomos++;
-      printf("\nLEN ATOMOS: %d", lenAtomos);
       cadAtomix = agregaAtomo(cadAtomix, a);
-      printf("\nCADENA: %c", cadAtomix[lenAtomos - 1].car);
   		break;
 	  }
   }
@@ -282,20 +263,15 @@ cteSimbol      [A-Z]{1,8}
 	uint8_t iguales = strcmp(clase6[0], yytext);
 	t.clase = 6;
   lenAtomos++;
-  printf("\nLEN ATOMOS: %d", lenAtomos);
 	if(!iguales){
 		t.valor = 0;
     a.car = '(';
-    printf("\nATOMO: %c", a.car);
     cadAtomix = agregaAtomo(cadAtomix, a);
-    printf("\nCADENA: %c", cadAtomix[lenAtomos - 1].car);
   }
 	else{
 		t.valor = 1;
     a.car = ')';
-    printf("\nATOMO: %c", a.car);
     cadAtomix = agregaAtomo(cadAtomix, a);
-    printf("\nCADENA: %c", cadAtomix[lenAtomos - 1].car);
   }
 	lenTokens++;
   tokens = agregaToken(tokens, t);
@@ -422,6 +398,13 @@ void imprimeAtomos(Atomo *arr){
   for(i = 0; i < lenAtomos; i++)
       fprintf(salida, "%c", arr[i].car);
   fprintf(salida, "|\n");
+}
+
+void imprimeAtomosConsola(Atomo *arr){
+  uint8_t i;
+  for(i = 0; i < lenAtomos; i++)
+      printf("%c", arr[i].car);
+  printf("\n");
 }
 
 void agregaFinCadena(){
@@ -605,19 +588,23 @@ void define(){
   if(caracter == 'd'){
     caracter = obtenerAtomo(cadAtomix);
 		cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-    if(caracter == 'a')
+    if(caracter == 'a'){
       caracter = obtenerAtomo(cadAtomix);
 			cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
+    }
     else
       error();
-    if(caracter == 's')
+    if(caracter == 's'){
       caracter = obtenerAtomo(cadAtomix);
 			cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
+    }
     else
       error();
-  }else
+  }else{
     error();
-    return;
+  }
+  return;
+
 }
 
 /* ======================================
@@ -628,14 +615,16 @@ void undef(){
   if(caracter == 'u'){
     caracter = obtenerAtomo(cadAtomix);
 		cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-    if(caracter == 'a')
+    if(caracter == 'a'){
       caracter = obtenerAtomo(cadAtomix);
 			cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-    else
+    }else{
       error();
-  }else
+    }
+  }else{
     error();
-    return;
+  }
+  return;
 }
 
 
@@ -714,17 +703,20 @@ void F(){
       caracter = obtenerAtomo(cadAtomix);
 			cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
       E();
-      if(caracter == ')' )
+      if(caracter == ')'){
         caracter = obtenerAtomo(cadAtomix);
 			  cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-      else
+      }else{
         error();
+      }
     }else {
-      if(caracter == 'a' ||   caracter == 'e')
+      if(caracter == 'a' ||   caracter == 'e'){
         caracter = obtenerAtomo(cadAtomix);
 		  	cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-      else
+      }
+      else{
         error();
+      }
     }
     return;
 }
@@ -736,11 +728,13 @@ void F(){
 ======================================*/
 
 void operadorRel(){
-  if(caracter == '>' || caracter == 'g' || caracter == '<' || caracter == 'q' || caracter == 'r' || caracter == 'p')
+  if(caracter == '>' || caracter == 'g' || caracter == '<' || caracter == 'q' || caracter == 'r' || caracter == 'p'){
     caracter = obtenerAtomo(cadAtomix);
-			cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-  else
+		cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento cadAtomix
+  }
+  else{
     error();
+  }
     return;
 }
 
@@ -749,9 +743,9 @@ void operadorRel(){
     Variable cadAtomix y caracter deben de ser GLOBALES
 ======================================*/
 
-void parser(char *cadAtomix){
+void parser(Atomo *cadAtomix){
   char caracter = obtenerAtomo(cadAtomix);
-			cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
+	cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
   SimboloInicial();
   if (caracter == '\0')
     aceptar();
@@ -773,12 +767,12 @@ void error(){
     Funcion aceptar y rechazar
 ======================================*/
 void aceptar(){
-  printf("La cadena de atomos es aceptada");
+  printf("La cadena de atomos es aceptada\n");
   return;
 }
 
 void rechazar(){
-  printf("La cadena de atomos es rechazada");
+  printf("La cadena de atomos es rechazada\n");
 }
 
 
@@ -803,7 +797,11 @@ int main(int argc, char *argv[]){
 		imprimeCteSim(tablaCteS);
     imprimeAtomos(cadAtomix);
     agregaFinCadena();
-    parser();
+    printf("\n***************************************");
+    printf("\nCOMIENZA PARSER");
+    printf("\n***************************************\n");
+    printf("\nCadena de atomos --> "); imprimeAtomosConsola(cadAtomix);
+    parser(cadAtomix);
     free(simbolos);
     free(tokens);
     free(tablaCteS);
