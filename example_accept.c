@@ -1,5 +1,3 @@
-#undef
-
 #define B "0"
 
 #ifdef B

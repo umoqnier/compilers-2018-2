@@ -41,23 +41,23 @@ char obtenerAtomo(Atomo *);
 void agregaFinCadena();
 Atomo *actualizaAtomos(Atomo *);
 void imprimeAtomosConsola(Atomo *);
-void SimboloInicial();
-void CPrep();
-void CompCond();
-void lineaIf();
-void texto();
-void elseOp();
-void define();
-void undef();
-void expConstante();
-void E();
-void EP();
-void T();
-void TP();
-void F();
-void operadorRel();
-void parser();
-void error();
+char SimboloInicial(char);
+char CPrep(char);
+char CompCond(char);
+char lineaIf(char);
+char texto(char);
+char elseOp(char);
+char define(char);
+char undef(char);
+char expConstante(char);
+char E(char);
+char EP(char);
+char T(char);
+char TP(char);
+char F(char);
+char operadorRel(char);
+void parser(Atomo *);
+char error(char);
 void aceptar();
 void rechazar();
 
@@ -431,71 +431,71 @@ char obtenerAtomo(Atomo *arr){
     Simbolo inicial de la gramatica
 ======================================*/
 
-void SimboloInicial(){
+char SimboloInicial(char caracter){
   if(caracter == 'c'){
     caracter = obtenerAtomo(cadAtomix);
     cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento
-    CPrep();
-    return;
+    caracter = CPrep(caracter);
+    return caracter;
   }else{
     if(caracter == 'i' || caracter == 't' || caracter == 'm'){
-      CompCond();
-      CPrep();
-      return;
+      caracter = CompCond(caracter);
+      caracter = CPrep(caracter);
+      return caracter;
     }else{
       if(caracter == 'd'){
-        define();
-        CPrep();
-        return;
+        caracter = define(caracter);
+        caracter = CPrep(caracter);
+        return caracter;
       }else{
         if(caracter == 'u'){
-          undef();
-          CPrep();
-          return;
+          caracter = undef(caracter);
+          caracter = CPrep(caracter);
+          return caracter;
         }else
-          error();
+          caracter = error(caracter);
       }
     }
   }
-  return;
+  return caracter;
 }
 
-void CPrep(){
+char CPrep(char caracter){
   if(caracter == 'c' || caracter == 'i' || caracter == 't' || caracter == 'm' || caracter == 'd' || caracter == 'u'){
-    SimboloInicial();
+    caracter = SimboloInicial(caracter);
   }else{
     if(caracter == '$')
-      return;
+      return caracter;
     else
-      error();
+      caracter = error(caracter);
   }
-  return;
+  return caracter;
 }
 
 
- void CompCond(){
+ char CompCond(char caracter){
   if(caracter == 'i' || caracter == 't' || caracter == 'm' ){
-    lineaIf();
-    texto();
-    elseOp();
+    caracter = lineaIf(caracter);
+    caracter = texto(caracter);
+    caracter = elseOp(caracter);
     if(caracter == 'n'){
       caracter = obtenerAtomo(cadAtomix);
 			cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-      return;
+      return caracter;
     }else{
-      error();
+      caracter = error(caracter);
     }
   }else
-    error();
-  return;
+    caracter = error(caracter);
+  return caracter;
  }
 
-void lineaIf(){
+char lineaIf(char caracter){
   if(caracter == 'i'){
     caracter = obtenerAtomo(cadAtomix);
 		cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-    expConstante();
-    return;
+    caracter = expConstante(caracter);
+    return caracter;
   }else{
     if(caracter == 't'){
       caracter = obtenerAtomo(cadAtomix);
@@ -503,9 +503,9 @@ void lineaIf(){
       if(caracter == 'a'){
         caracter = obtenerAtomo(cadAtomix);
 			  cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-        return;
+        return caracter;
       }else
-        error();
+        caracter = error(caracter);
     }else{
       if(caracter == 'm'){
         caracter = obtenerAtomo(cadAtomix);
@@ -513,71 +513,71 @@ void lineaIf(){
         if(caracter == 'a'){
           caracter = obtenerAtomo(cadAtomix);
 			    cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-          return;
+          return caracter;
         }else
-          error();
+          caracter = error(caracter);
       }else
-        error();
+        caracter = error(caracter);
     }
   }
-  return;
+  return caracter;
 }
 
-void texto(){
+char texto(char caracter){
   if(caracter=='c'){
     caracter = obtenerAtomo(cadAtomix);
 		cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-    texto();
-    return;
+    caracter = texto(caracter);
+    return caracter;
   }else{
     if(caracter == 'd'){
-      define();
-      texto();
-      return;
+      caracter = define(caracter);
+      caracter = texto(caracter);
+      return caracter;
     }else{
       if(caracter == 'n'|| caracter == 'f' || caracter == 'l'){
-        return;
+        return caracter;
       }else{
         if(caracter == 'u'){
-          undef();
-          texto();
-          return;
+          caracter = undef(caracter);
+          caracter = texto(caracter);
+          return caracter;
         }else{
           if(caracter == 'i' || caracter == 't' || caracter == 'm'){
-            CompCond();
-            texto();
-            return;
+            caracter = CompCond(caracter);
+            caracter = texto(caracter);
+            return caracter;
           }else
-            error();
+            caracter = error(caracter);
         }
       }
     }
-    return;
+    return caracter;
   }
 }
 
 
-void elseOp(){
+char elseOp(char caracter){
   if(caracter == 'n'){
-    return;
+    return caracter;
   }else{
     if(caracter == 'f'){
       caracter = obtenerAtomo(cadAtomix);
 			cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-      expConstante();
-      texto();
-      elseOp();
-      return;
+      caracter = expConstante(caracter);
+      caracter = texto(caracter);
+      caracter = elseOp(caracter);
+      return caracter;
     }else{
       if(caracter == 'l'){
         caracter = obtenerAtomo(cadAtomix);
 			  cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-        texto();
-        return;
+        caracter = texto(caracter);
+        return caracter;
       }else
-        error();
+        caracter = error(caracter);
     }
-    return;
+    return caracter;
   }
 }
 
@@ -585,7 +585,7 @@ void elseOp(){
     Función define
 ======================================*/
 
-void define(){
+char define(char caracter){
   if(caracter == 'd'){
     caracter = obtenerAtomo(cadAtomix);
 		cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
@@ -596,13 +596,13 @@ void define(){
         caracter = obtenerAtomo(cadAtomix);
         cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
       }else
-        error();
+        caracter = error(caracter);
     }else
-      error();
+      caracter = error(caracter);
   }else{
-    error();
+    caracter = error(caracter);
   }
-  return;
+  return caracter;
 
 }
 
@@ -610,7 +610,7 @@ void define(){
     Función undef
 ======================================*/
 
-void undef(){
+char undef(char caracter){
   if(caracter == 'u'){
     caracter = obtenerAtomo(cadAtomix);
 		cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
@@ -618,12 +618,12 @@ void undef(){
       caracter = obtenerAtomo(cadAtomix);
 			cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
     }else{
-      error();
+      caracter = error(caracter);
     }
   }else{
-    error();
+    caracter = error(caracter);
   }
-  return;
+  return caracter;
 }
 
 
@@ -631,14 +631,14 @@ void undef(){
    Funcion expresion constante
 ======================================*/
 
-void expConstante(){
+char expConstante(char caracter){
   if(caracter == '(' || caracter == 'a' || caracter == 'e'){
-    E();
-    operadorRel();
-    E();
+    caracter = E(caracter);
+    caracter = operadorRel(caracter);
+    caracter = E(caracter);
   }else
-    error();
-  return;
+    caracter = error(caracter);
+  return caracter;
 }
 
 
@@ -646,92 +646,88 @@ void expConstante(){
     Funciones de aritmetica
 ======================================*/
 
-void E(){
+char E(char caracter){
   if(caracter == '(' || caracter == 'a' || caracter == 'e'){
-    T();
-    EP();
+    caracter = T(caracter);
+    caracter = EP(caracter);
   }else
-      error();
-  return;
+      caracter = error(caracter);
+  return caracter;
 }
 
-void EP(){
+char EP(char caracter){
   if (caracter == '+'){
     caracter = obtenerAtomo(cadAtomix);
 		cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-    T();
-    EP();
-    return;
-<<<<<<< HEAD
-  }else if(caracter == ')' || caracter == '$')
-=======
+    caracter = T(caracter);
+    caracter = EP(caracter);
+    return caracter;
   }else{
       if(caracter == '-'){
         caracter = obtenerAtomo(cadAtomix);
         cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-        T();
-        EP();
-        return;
+        caracter = T(caracter);
+        caracter = EP(caracter);
+        return caracter;
       }else{
         if(caracter == '>' || caracter == 'g' || caracter == '<' || caracter == 'q' || caracter == 'p' || caracter == 'r' || caracter == 'c' || caracter == 'd' || caracter == 'u' || caracter=='i' || caracter == 't' || caracter == 'm' || caracter == 'n' || caracter == 'f' || caracter == 'l' || caracter == ')'){
->>>>>>> 6dd36f81662aa6a2ffa7b7512df69393bdf0f45f
-          return;
+          return caracter;
         }else
-          error();
+          caracter = error(caracter);
       }
   }
-  return; 
+  return caracter;
 }
 
-void T(){
+char T(char caracter){
   if(caracter == '(' || caracter == 'a' || caracter == 'e'){
-    F();
-    TP();
+    caracter = F(caracter);
+    caracter = TP(caracter);
   }else
-    error();
-  return;
+    caracter = error(caracter);
+  return caracter;
 }
 
-void TP(){
+char TP(char caracter){
   if(caracter == '*' || caracter == '/' || caracter == '%'){
     caracter = obtenerAtomo(cadAtomix);
 		cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-    F();
-    TP();
-    return;
+    caracter = F(caracter);
+    caracter = TP(caracter);
+    return caracter;
   }else{
     if(caracter == '+' || caracter == '-' || caracter == '>' || caracter == 'g' || caracter == '<' || caracter == 'p' || caracter == 'q' || caracter == 'r' || caracter == ')' || caracter == 'c' || caracter == 'd' || caracter == 'u' || caracter == 'i' || caracter == 't' || caracter == 'm' || caracter == 'n' || caracter == 'f' || caracter == 'l'){
-      return;
+      return caracter;
     }else
-      error();
+      caracter = error(caracter);
   }
-  return;
+  return caracter;
 }
 
 
-void F(){
+char F(char caracter){
     if(caracter == '(' ){
       caracter = obtenerAtomo(cadAtomix);
 			cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-      E();
+      caracter = E(caracter);
       if(caracter == ')'){
         caracter = obtenerAtomo(cadAtomix);
 			  cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-        return;
+        return caracter;
       }else{
-        error();
+        caracter = error(caracter);
       }
     }else {
       if(caracter == 'a' ||   caracter == 'e'){
         caracter = obtenerAtomo(cadAtomix);
 		  	cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-        return;
+        return caracter;
       }
       else{
-        error();
+        caracter = error(caracter);
       }
     }
-    return;
+    return caracter;
 }
 
 
@@ -740,15 +736,15 @@ void F(){
     Funciones operadores relacionales
 ======================================*/
 
-void operadorRel(){
+char operadorRel(char caracter){
   if(caracter == '>' || caracter == 'g' || caracter == '<' || caracter == 'q' || caracter == 'r' || caracter == 'p'){
     caracter = obtenerAtomo(cadAtomix);
 		cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento cadAtomix
   }
   else{
-    error();
+    caracter = error(caracter);
   }
-    return;
+    return caracter;
 }
 
 /* ======================================
@@ -757,9 +753,10 @@ void operadorRel(){
 ======================================*/
 
 void parser(Atomo *cadAtomix){
-  char caracter = obtenerAtomo(cadAtomix);
+  char caracter;
+  caracter = obtenerAtomo(cadAtomix);
 	cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-  SimboloInicial();
+  caracter = SimboloInicial(caracter);
   if (caracter == '$')
     aceptar();
   else
@@ -769,11 +766,11 @@ void parser(Atomo *cadAtomix){
 /* ======================================
     Funcion error
 ======================================*/
-void error(){
-  printf("\nHa ocurrido un error con el caracter: %c", caracter);
+char error(char caracter){
+  printf("\nHa ocurrido un error con el caracter: %c\n", caracter);
   caracter = obtenerAtomo(cadAtomix);
 	cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-  return;
+  return caracter;
 }
 
 /* ======================================
@@ -781,7 +778,6 @@ void error(){
 ======================================*/
 void aceptar(){
   printf("La cadena de atomos es aceptada\n");
-  return;
 }
 
 void rechazar(){
