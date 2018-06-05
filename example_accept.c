@@ -6,7 +6,7 @@
 
 #define PI "3.14159"
 main() {
-  printf("Programa con B>0\n");
+	printf("Programa con B>0\n");
 
 #undef PI
   float pi = 3.14159;
