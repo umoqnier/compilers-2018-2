@@ -1,3 +1,4 @@
+#define PF "printf"
 #define B "0"
 
 #ifdef B
@@ -6,7 +7,7 @@
 
 #define PI "3.14159"
 main() {
-	printf("Programa con B>0\n");
+  PF("Programa con B>0\n");
 
 #undef PI
   float pi = 3.14159;
@@ -15,12 +16,12 @@ main() {
 #elif B<0
 
 main() {
-  printf("Programa con B<0\n");
+  PF("Programa con B<0\n");
 } // fin del segundo programa
 
 #else
 main() {
-  printf("Programa con B==0\n");
+  PF("Programa con B==0\n");
 } // fin del tercer programa
 #endif
 #endif

@@ -34,6 +34,7 @@ typedef struct{
 /* Prototipos de funciones */
 Token *agregaToken(Token *, Token);
 Simbolo *agregaSimbolo(Simbolo *, Simbolo);
+Simbolo *asignaValor(Simbolo *, int, int);
 CteSimbolica *agregaConstanteS(CteSimbolica *, CteSimbolica);
 codAnaliza *agregaCodAnaliza(codAnaliza *, codAnaliza);
 Atomo *agregaAtomo(Atomo *, Atomo);
@@ -82,6 +83,7 @@ char *clase7[] = {"+","-","*","/","%"};
 /* Para el parser */
 char caracter;  // Variable para leer caracteres de la cadena de atomos
 
+
 /* Átomos por clase*/
 
 char atomos0[8] = {'d','f','l','n','i','t','m','u'};
@@ -108,7 +110,7 @@ entero         ([1-9]{dig}*|0)
 opRel          >|>=|<|<=|==|!=
 opAri          \+|\-|\*|\/|%
 reservadas     ^(#define|#elif|#else|#endif|#if|#ifdef|#ifndef|#undef)
-valCteSimbol   \"({mantReal}|{entero})\"
+valCteSimbol   \"({mantReal}|{entero}|[a-zA-Z]+)\"
 cteSimbol      [A-Z]{1,8}
 
 %%
@@ -130,6 +132,10 @@ cteSimbol      [A-Z]{1,8}
   lenTokens++;
   tokens = agregaToken(tokens, t);
   lenAtomos++;
+  cadAtomix = agregaAtomo(cadAtomix, a);
+  /*Para agregar el numero a la cadena de atomos*/
+  lenAtomos++;
+  a.car = tokens[lenTokens - 1].valor + '0';
   cadAtomix = agregaAtomo(cadAtomix, a);
 }
 
@@ -159,6 +165,8 @@ cteSimbol      [A-Z]{1,8}
   Token t;
   Simbolo s;
   Atomo a;
+  int aux = 0;
+  char digit;
   s.valor = -1;
   s.alcance = -1;
   t.clase = 1;
@@ -183,6 +191,11 @@ cteSimbol      [A-Z]{1,8}
   a.car = 'a';
   lenAtomos++;
   cadAtomix = agregaAtomo(cadAtomix, a);
+  /*Para agregar el numero a la cadena de atomos*/
+  aux = t.valor;
+  lenAtomos++;
+  a.car = tokens[lenTokens - 1].valor + '0';
+  cadAtomix = agregaAtomo(cadAtomix, a);
 }
 
 {valCteSimbol} {
@@ -201,6 +214,10 @@ cteSimbol      [A-Z]{1,8}
   a.car = 's';
   lenAtomos++;
   cadAtomix = agregaAtomo(cadAtomix, a);
+  /*Para agregar el numero a la cadena de atomos*/
+  lenAtomos++;
+  a.car = tokens[lenTokens - 1].valor + '0';
+  cadAtomix = agregaAtomo(cadAtomix, a);
 }
 
 {entero} {
@@ -213,6 +230,10 @@ cteSimbol      [A-Z]{1,8}
   tokens = agregaToken(tokens, t);
   a.car = 'e';
   lenAtomos++;
+  cadAtomix = agregaAtomo(cadAtomix, a);
+  /*Para agregar el numero a la cadena de atomos*/
+  lenAtomos++;
+  a.car = tokens[lenTokens - 1].valor + '0';
   cadAtomix = agregaAtomo(cadAtomix, a);
 }
 
@@ -278,6 +299,7 @@ cteSimbol      [A-Z]{1,8}
 }
 %%
 
+char pos, valor;
 /* ====================================
     Funciones para estructura tokens
 ======================================*/
@@ -388,7 +410,7 @@ void imprimeSimbolos(Simbolo *arr){
 }
 
 /* ======================================
-    COMIENZA ANALIZADOR SINTACTICO
+    COMIENZA ANALIZADOR SINTACTICO - SEMANTICO
 ======================================*/
 
 void imprimeAtomos(Atomo *arr){
@@ -460,6 +482,7 @@ char SimboloInicial(char caracter){
   return caracter;
 }
 
+
 char CPrep(char caracter){
   if(caracter == 'c' || caracter == 'i' || caracter == 't' || caracter == 'm' || caracter == 'd' || caracter == 'u'){
     caracter = SimboloInicial(caracter);
@@ -489,6 +512,7 @@ char CPrep(char caracter){
     caracter = error(caracter);
   return caracter;
  }
+
 
 char lineaIf(char caracter){
   if(caracter == 'i'){
@@ -522,6 +546,7 @@ char lineaIf(char caracter){
   }
   return caracter;
 }
+
 
 char texto(char caracter){
   if(caracter=='c'){
@@ -586,19 +611,27 @@ char elseOp(char caracter){
 ======================================*/
 
 char define(char caracter){
+  int lenVal;
   if(caracter == 'd'){
     caracter = obtenerAtomo(cadAtomix);
 		cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
     if(caracter == 'a'){
+      pos = obtenerAtomo(cadAtomix);
+      cadAtomix = actualizaAtomos(cadAtomix);
       caracter = obtenerAtomo(cadAtomix);
-			cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-      if(caracter == 's'){
-        caracter = obtenerAtomo(cadAtomix);
-        cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-      }else
-        caracter = error(caracter);
+      cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
     }else
       caracter = error(caracter);
+
+    if(caracter == 's'){
+        valor = obtenerAtomo(cadAtomix);
+        cadAtomix = actualizaAtomos(cadAtomix);
+        caracter = obtenerAtomo(cadAtomix);
+        cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
+        free(valor);
+    }else
+        caracter = error(caracter);
+
   }else{
     caracter = error(caracter);
   }
