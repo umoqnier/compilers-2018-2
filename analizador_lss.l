@@ -611,32 +611,23 @@ char elseOp(char caracter){
 ======================================*/
 
 char define(char caracter){
-  int lenVal;
   if(caracter == 'd'){
     caracter = obtenerAtomo(cadAtomix);
-		cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-    if(caracter == 'a'){
-      pos = obtenerAtomo(cadAtomix);
-      cadAtomix = actualizaAtomos(cadAtomix);
-      caracter = obtenerAtomo(cadAtomix);
-      cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-    }else
-      caracter = error(caracter);
-
-    if(caracter == 's'){
-        valor = obtenerAtomo(cadAtomix);
-        cadAtomix = actualizaAtomos(cadAtomix);
+    cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
+      if(caracter == 'a'){
         caracter = obtenerAtomo(cadAtomix);
         cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
-        free(valor);
-    }else
-        caracter = error(caracter);
-
+        if(caracter == 's'){
+          caracter = obtenerAtomo(cadAtomix);
+          cadAtomix = actualizaAtomos(cadAtomix); //Remueve el primer elemento(cadAtomix);
+        }else
+          caracter = error(caracter);
+      }else
+      caracter = error(caracter);
   }else{
     caracter = error(caracter);
   }
   return caracter;
-
 }
 
 /* ======================================
